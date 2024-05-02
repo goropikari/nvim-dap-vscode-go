@@ -117,9 +117,7 @@ local function setup_go_configuration(dap, configs)
   end
 
   for _, config in ipairs(configs.dap_configurations) do
-    if config.type == "go" then
-      table.insert(dap.configurations.go, config)
-    end
+    table.insert(dap.configurations.go, config)
   end
 end
 

@@ -62,7 +62,7 @@ The example bellow shows all the possible configurations:
       -- |dap-configuration|
       dap_configurations = {
         {
-          -- Must be "go" or it will be ignored by the plugin
+          -- If you write other than "go", you need to write your own adapter.
           type = "go",
           name = "Attach remote",
           mode = "remote",

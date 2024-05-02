@@ -1,0 +1,25 @@
+{
+	"name": "nvim-dap-vscode-go",
+	"build": {
+		"dockerfile": "Dockerfile",
+	}
+	"features": {
+		"ghcr.io/goropikari/devcontainer-feature/neovim:1": {
+			"version": "v0.9.5",
+		},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/sshd:1": {},
+		"ghcr.io/devcontainers/features/rust:1": {
+			"version": "1.76"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "18",
+		}
+	},
+
+	"workspaceFolder": "/workspaces/nvim-dap-vscode-go",
+
+	"appPort": [2222],
+
+	"postCreateCommand": "bash -c .devcontainer/post-create.sh"
+}

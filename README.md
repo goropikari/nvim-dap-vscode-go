@@ -1,4 +1,4 @@
-# nvim-dap-go
+# nvim-dap-vscode-go
 
 An extension for [nvim-dap][1] providing configurations for launching go debugger (delve) and debugging individual tests.
 
@@ -15,6 +15,7 @@ An extension for [nvim-dap][1] providing configurations for launching go debugge
 - Neovim >= 0.9.0
 - [nvim-dap][1]
 - [delve][2] >= 1.7.0
+- nodejs >= 18
 
 This plugin extension make usage of treesitter to find the nearest test to debug.
 Make sure you have the Go treesitter parser installed.
@@ -22,9 +23,16 @@ If using [nvim-treesitter][3] plugin you can install with `:TSInstall go`.
 
 ## Installation
 
+Download DAP adapter
+```bash
+NVIM_APPNAME=${NVIM_APPNAME:-nvim}
+wget $(curl -s https://api.github.com/repos/golang/vscode-go/releases/latest | jq -r '.assets.[] | select (.name | contains(".vsix")) | .browser_download_url') -O ~/.local/share/$NVIM_APPNAME/vscode-go.vsix
+unzip ~/.local/share/$NVIM_APPNAME/vscode-go.vsix -d ~/.local/share/$NVIM_APPNAME/vscode-go
+```
+
 - Install like any other neovim plugin:
-  - If using [vim-plug][4]: `Plug 'leoluz/nvim-dap-go'`
-  - If using [packer.nvim][5]: `use 'leoluz/nvim-dap-go'`
+  - If using [vim-plug][4]: `Plug 'goropikari/nvim-dap-vscode-go'`
+  - If using [packer.nvim][5]: `use 'goropikari/nvim-dap-vscode-go'`
 
 ## Usage
 
@@ -33,24 +41,23 @@ If using [nvim-treesitter][3] plugin you can install with `:TSInstall go`.
 Call the setup function in your `init.vim` to register the go adapter and the configurations to debug go tests:
 
 ```vimL
-lua require('dap-go').setup()
+lua require('dap-vscode-go').setup()
 ```
 
 ### Configuring
 
-It is possible to customize nvim-dap-go by passing a config table in the setup function.
+It is possible to customize nvim-dap-vscode-go by passing a config table in the setup function.
 
 The example below shows all the possible configurations:
 
 ```lua
-lua require('dap-go').setup {
+lua require('dap-vscode-go').setup {
   -- Additional dap configurations can be added.
   -- dap_configurations accepts a list of tables where each entry
   -- represents a dap configuration. For more details do:
   -- :help dap-configuration
   dap_configurations = {
     {
-      -- Must be "go" or it will be ignored by the plugin
       type = "go",
       name = "Attach remote",
       mode = "remote",
@@ -96,10 +103,10 @@ lua require('dap-go').setup {
 
 
 To debug the closest method above the cursor use you can run:
-- `:lua require('dap-go').debug_test()`
+- `:lua require('dap-vscode-go').debug_test()`
 
 Once a test was run, you can simply run it again from anywhere:
-- `:lua require('dap-go').debug_last_test()`
+- `:lua require('dap-vscode-go').debug_last_test()`
 
 It is better to define a mapping to invoke this command. See the mapping section below.
 
@@ -117,7 +124,7 @@ It is better to define a mapping to invoke this command. See the mapping section
 
 1. Register a new option to attach to a remote debugger:
 ```lua
-lua require('dap-go').setup {
+lua require('dap-vscode-go').setup {
   dap_configurations = {
     {
       type = "go",
@@ -138,7 +145,7 @@ dlv debug -l 127.0.0.1:38697 --headless ./main.go -- subcommand --myflag=xyz
 ## Mappings
 
 ```vimL
-nmap <silent> <leader>td :lua require('dap-go').debug_test()<CR>
+nmap <silent> <leader>td :lua require('dap-vscode-go').debug_test()<CR>
 ```
 
 ## Acknowledgement

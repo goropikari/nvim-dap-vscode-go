@@ -8,7 +8,7 @@ local M = {
 
 local default_config = {
   delve = {
-    path = "dlv",
+    path = vim.fn.exepath('dlv'),
     initialize_timeout_sec = 20,
     port = "${port}",
     args = {},
@@ -44,21 +44,21 @@ local function filtered_pick_process()
   return require("dap.utils").pick_process(opts)
 end
 
-local function setup_delve_adapter(dap, config)
-  local args = { "dap", "-l", "127.0.0.1:" .. config.delve.port }
-  vim.list_extend(args, config.delve.args)
-
+local function setup_adapter(dap, plugin_config)
   dap.adapters.go = {
-    type = "server",
-    port = config.delve.port,
-    executable = {
-      command = config.delve.path,
-      args = args,
-      detached = config.delve.detached,
-    },
-    options = {
-      initialize_timeout_sec = config.delve.initialize_timeout_sec,
-    },
+    type = "executable",
+    command = "node",
+    args = { vim.fn.stdpath("data") .. "/vscode-go/extension/dist/debugAdapter.js" },
+    enrich_config = function(cfg, on_config)
+      local final_config = vim.deepcopy(cfg)
+      final_config.dlvToolPath = plugin_config.delve.path
+      if cfg.mode == "test" then
+        final_config.args = cfg.args or {}
+        table.insert(final_config.args, "-test.run")
+        table.insert(final_config.args, "^" .. require("dap-go-ts").closest_test().name .. "$")
+      end
+      on_config(final_config)
+    end,
   }
 end
 
@@ -125,7 +125,7 @@ function M.setup(opts)
   local config = vim.tbl_deep_extend("force", default_config, opts or {})
   M.test_buildflags = config.delve.build_flags
   local dap = load_module("dap")
-  setup_delve_adapter(dap, config)
+  setup_adapter(dap, config)
   setup_go_configuration(dap, config)
 end
 
